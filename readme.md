@@ -2,7 +2,7 @@
 
 ## Overview
 
-CodeLensLLM is a powerful tool designed to analyze Python codebases and extract function and class signatures using Abstract Syntax Trees (AST). This tool is particularly valuable for developers working with Large Language Models (LLMs) who need to efficiently analyze and describe large Python codebases while maximizing limited context windows.
+CodeLensLLM is a tool designed to analyze Python codebases and extract function and class signatures using Abstract Syntax Trees (AST). This tool is particularly valuable for developers working with Large Language Models (LLMs) who need to efficiently analyze and describe large Python codebases while maximizing limited context windows.
 
 ### Key Features
 - Extracts function and method signatures using AST parsing
@@ -15,7 +15,7 @@ CodeLensLLM is a powerful tool designed to analyze Python codebases and extract 
 
 ### Target Audience
 - Developers working with LLMs who need concise codebase representations
-- Teams analyzing large Python codebases
+- Users analyzing large Python codebases
 - Developers performing code analysis and documentation tasks
 
 ## Installation
