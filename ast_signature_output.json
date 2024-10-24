@@ -1,0 +1,2172 @@
+{
+    "interpreter\\computer_use\\loop.py": {
+        "functions": {
+            "print_markdown": {
+                "signature": "(message)",
+                "docstring": "Display markdown message. Works with multiline strings with lots of indentation.\nWill automatically make single line > tags beautiful."
+            },
+            "sampling_loop": {
+                "signature": "async ()",
+                "docstring": "Agentic sampling loop for the assistant/tool interaction of computer use."
+            },
+            "_maybe_filter_to_n_most_recent_images": {
+                "signature": "(messages: list[BetaMessageParam], images_to_keep: int, min_removal_threshold=5: int)",
+                "docstring": "With the assumption that images are screenshots that are of diminishing value as\nthe conversation progresses, remove all but the final `images_to_keep` tool_result\nimages in place, with a chunk of min_removal_threshold to reduce the amount we\nbreak the implicit prompt cache."
+            },
+            "_make_api_tool_result": {
+                "signature": "(result: ToolResult, tool_use_id: str) -> BetaToolResultBlockParam",
+                "docstring": "Convert an agent ToolResult to an API ToolResultBlockParam."
+            },
+            "_maybe_prepend_system_tool_result": {
+                "signature": "(result: ToolResult, result_text: str)"
+            },
+            "main": {
+                "signature": "async ()"
+            },
+            "run_async_main": {
+                "signature": "()"
+            },
+            "check_mouse_position": {
+                "signature": "()"
+            }
+        },
+        "classes": {}
+    },
+    "interpreter\\computer_use\\unused_markdown.py": {
+        "classes": {
+            "MarkdownStreamer": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self)"
+                    },
+                    "write_char": {
+                        "signature": "(self, char: str)",
+                        "docstring": "Write a single character with current styling."
+                    },
+                    "handle_marker": {
+                        "signature": "(self, char: str) -> bool",
+                        "docstring": "Handle markdown markers."
+                    },
+                    "handle_horizontal_rule": {
+                        "signature": "(self, char: str) -> bool",
+                        "docstring": "Handle horizontal rule markers."
+                    },
+                    "handle_line_start": {
+                        "signature": "(self, char: str) -> bool",
+                        "docstring": "Handle special characters at start of lines."
+                    },
+                    "feed": {
+                        "signature": "(self, char: str)",
+                        "docstring": "Feed a single character into the streamer."
+                    },
+                    "reset": {
+                        "signature": "(self)",
+                        "docstring": "Reset streamer state."
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\computer_use\\tools\\base.py": {
+        "classes": {
+            "BaseAnthropicTool": {
+                "methods": {
+                    "__call__": {
+                        "signature": "(self, **kwargs) -> Any",
+                        "docstring": "Executes the tool with the given arguments."
+                    },
+                    "to_params": {
+                        "signature": "(self) -> BetaToolUnionParam"
+                    }
+                },
+                "docstring": "Abstract base class for Anthropic-defined tools."
+            },
+            "ToolResult": {
+                "methods": {
+                    "__bool__": {
+                        "signature": "(self)"
+                    },
+                    "__add__": {
+                        "signature": "(self, other: 'ToolResult')"
+                    },
+                    "replace": {
+                        "signature": "(self, **kwargs)",
+                        "docstring": "Returns a new ToolResult with the given fields replaced."
+                    }
+                },
+                "docstring": "Represents the result of a tool execution."
+            },
+            "CLIResult": {
+                "docstring": "A ToolResult that can be rendered as a CLI output."
+            },
+            "ToolFailure": {
+                "docstring": "A ToolResult that represents a failure."
+            },
+            "ToolError": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, message)"
+                    }
+                },
+                "docstring": "Raised when a tool encounters an error."
+            }
+        }
+    },
+    "interpreter\\computer_use\\tools\\bash.py": {
+        "classes": {
+            "_BashSession": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self)"
+                    },
+                    "start": {
+                        "signature": "async (self)"
+                    },
+                    "stop": {
+                        "signature": "(self)",
+                        "docstring": "Terminate the bash shell."
+                    },
+                    "run": {
+                        "signature": "async (self, command: str)",
+                        "docstring": "Execute a command in the bash shell."
+                    }
+                },
+                "docstring": "A session of a bash shell."
+            },
+            "BashTool": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self)"
+                    },
+                    "__call__": {
+                        "signature": "async (self, command=None: str | None, restart=False: bool, **kwargs)"
+                    },
+                    "to_params": {
+                        "signature": "(self) -> BetaToolBash20241022Param"
+                    }
+                },
+                "docstring": "A tool that allows the agent to run bash commands.\nThe tool parameters are defined by Anthropic and are not editable."
+            }
+        }
+    },
+    "interpreter\\computer_use\\tools\\collection.py": {
+        "classes": {
+            "ToolCollection": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, *tools: BaseAnthropicTool)"
+                    },
+                    "to_params": {
+                        "signature": "(self) -> list[BetaToolUnionParam]"
+                    },
+                    "run": {
+                        "signature": "async (self) -> ToolResult"
+                    }
+                },
+                "docstring": "A collection of anthropic-defined tools."
+            }
+        }
+    },
+    "interpreter\\computer_use\\tools\\computer.py": {
+        "functions": {
+            "chunks": {
+                "signature": "(s: str, chunk_size: int) -> list[str]"
+            },
+            "smooth_move_to": {
+                "signature": "(x, y, duration=1.2)"
+            }
+        },
+        "classes": {
+            "ComputerTool": {
+                "methods": {
+                    "options": {
+                        "signature": "(self) -> ComputerToolOptions"
+                    },
+                    "to_params": {
+                        "signature": "(self) -> BetaToolComputerUse20241022Param"
+                    },
+                    "__init__": {
+                        "signature": "(self)"
+                    },
+                    "__call__": {
+                        "signature": "async (self, **kwargs)"
+                    },
+                    "screenshot": {
+                        "signature": "async (self)",
+                        "docstring": "Take a screenshot of the current screen and return the base64 encoded image."
+                    },
+                    "shell": {
+                        "signature": "async (self, command: str, take_screenshot=True) -> ToolResult",
+                        "docstring": "Run a shell command and return the output, error, and optionally a screenshot."
+                    },
+                    "scale_coordinates": {
+                        "signature": "(self, source: ScalingSource, x: int, y: int)",
+                        "docstring": "Scale coordinates to a target maximum resolution."
+                    }
+                },
+                "docstring": "A tool that allows the agent to interact with the primary monitor's screen, keyboard, and mouse.\nThe tool parameters are defined by Anthropic and are not editable."
+            }
+        }
+    },
+    "interpreter\\computer_use\\tools\\edit.py": {
+        "classes": {
+            "EditTool": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self)"
+                    },
+                    "to_params": {
+                        "signature": "(self) -> BetaToolTextEditor20241022Param"
+                    },
+                    "__call__": {
+                        "signature": "async (self, **kwargs)"
+                    },
+                    "validate_path": {
+                        "signature": "(self, command: str, path: Path)",
+                        "docstring": "Check that the path/command combination is valid."
+                    },
+                    "view": {
+                        "signature": "async (self, path: Path, view_range=None: list[int] | None)",
+                        "docstring": "Implement the view command"
+                    },
+                    "str_replace": {
+                        "signature": "(self, path: Path, old_str: str, new_str: str | None)",
+                        "docstring": "Implement the str_replace command, which replaces old_str with new_str in the file content"
+                    },
+                    "insert": {
+                        "signature": "(self, path: Path, insert_line: int, new_str: str)",
+                        "docstring": "Implement the insert command, which inserts new_str at the specified line in the file content."
+                    },
+                    "undo_edit": {
+                        "signature": "(self, path: Path)",
+                        "docstring": "Implement the undo_edit command."
+                    },
+                    "read_file": {
+                        "signature": "(self, path: Path)",
+                        "docstring": "Read the content of a file from a given path; raise a ToolError if an error occurs."
+                    },
+                    "write_file": {
+                        "signature": "(self, path: Path, file: str)",
+                        "docstring": "Write the content of a file to a given path; raise a ToolError if an error occurs."
+                    },
+                    "_make_output": {
+                        "signature": "(self, file_content: str, file_descriptor: str, init_line=1: int, expand_tabs=True: bool)",
+                        "docstring": "Generate output for the CLI based on the content of a file."
+                    }
+                },
+                "docstring": "An filesystem editor tool that allows the agent to view, create, and edit files.\nThe tool parameters are defined by Anthropic and are not editable."
+            }
+        }
+    },
+    "interpreter\\computer_use\\tools\\run.py": {
+        "functions": {
+            "maybe_truncate": {
+                "signature": "(content: str, truncate_after=MAX_RESPONSE_LEN: int | None)",
+                "docstring": "Truncate content and append a notice if content exceeds the specified length."
+            },
+            "run": {
+                "signature": "async (cmd: str, timeout=120.0: float | None, truncate_after=MAX_RESPONSE_LEN: int | None)",
+                "docstring": "Run a shell command asynchronously with a timeout."
+            }
+        }
+    },
+    "interpreter\\core\\archived_server_1.py": {
+        "functions": {
+            "server": {
+                "signature": "(interpreter, host='0.0.0.0', port=8000)"
+            }
+        }
+    },
+    "interpreter\\core\\archived_server_2.py": {
+        "functions": {
+            "server": {
+                "signature": "(interpreter, port=8000)"
+            }
+        },
+        "classes": {
+            "AsyncInterpreter": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, interpreter)"
+                    },
+                    "_add_to_queue": {
+                        "signature": "async (self, queue, item)"
+                    },
+                    "clear_queue": {
+                        "signature": "async (self, queue)"
+                    },
+                    "clear_input_queue": {
+                        "signature": "async (self)"
+                    },
+                    "clear_output_queue": {
+                        "signature": "async (self)"
+                    },
+                    "input": {
+                        "signature": "async (self, chunk)",
+                        "docstring": "Expects a chunk in streaming LMC format."
+                    },
+                    "add_to_output_queue_sync": {
+                        "signature": "(self, chunk)",
+                        "docstring": "Synchronous function to add a chunk to the output queue."
+                    },
+                    "run": {
+                        "signature": "async (self)",
+                        "docstring": "Runs OI on the audio bytes submitted to the input. Will add streaming LMC chunks to the _output_queue."
+                    },
+                    "output": {
+                        "signature": "async (self)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\async_core.py": {
+        "functions": {
+            "authenticate_function": {
+                "signature": "(key)",
+                "docstring": "This function checks if the provided key is valid for authentication.\n\nReturns True if the key is valid, False otherwise."
+            },
+            "create_router": {
+                "signature": "(async_interpreter)"
+            }
+        },
+        "classes": {
+            "AsyncInterpreter": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, *args, **kwargs)"
+                    },
+                    "input": {
+                        "signature": "async (self, chunk)",
+                        "docstring": "Accumulates LMC chunks onto interpreter.messages.\nWhen it hits an \"end\" flag, calls interpreter.respond()."
+                    },
+                    "output": {
+                        "signature": "async (self)"
+                    },
+                    "respond": {
+                        "signature": "(self, run_code=None)"
+                    },
+                    "accumulate": {
+                        "signature": "(self, chunk)",
+                        "docstring": "Accumulates LMC chunks onto interpreter.messages."
+                    }
+                }
+            },
+            "Server": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, async_interpreter, host=None, port=None)"
+                    },
+                    "host": {
+                        "signature": "(self, value)"
+                    },
+                    "port": {
+                        "signature": "(self, value)"
+                    },
+                    "run": {
+                        "signature": "(self, host=None, port=None, retries=5)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\core.py": {
+        "classes": {
+            "OpenInterpreter": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, messages=None, offline=False, auto_run=False, verbose=False, debug=False, max_output=2800, safe_mode='off', shrink_images=True, loop=False, loop_message=\"Proceed. You CAN run code on my machine. If the entire task I asked for is done, say exactly 'The task is done.' If you need some specific information (like username or password) say EXACTLY 'Please provide more information.' If it's impossible, say 'The task is impossible.' (If I haven't provided a task, say exactly 'Let me know what you'd like to do next.') Otherwise keep going.\", loop_breakers=['The task is done.', 'The task is impossible.', \"Let me know what you'd like to do next.\", 'Please provide more information.'], disable_telemetry=False, in_terminal_interface=False, conversation_history=True, conversation_filename=None, conversation_history_path=get_storage_path('conversations'), os=False, speak_messages=False, llm=None, system_message=default_system_message, custom_instructions='', user_message_template='{content}', always_apply_user_message_template=False, code_output_template=\"Code output: {content}\\n\\nWhat does this output mean / what's next (if anything, or are we done)?\", empty_code_output_template=\"The code above was executed on my machine. It produced no text output. what's next (if anything, or are we done?)\", code_output_sender='user', computer=None, sync_computer=False, import_computer_api=False, skills_path=None, import_skills=False, multi_line=True, contribute_conversation=False, plain_text_display=False)"
+                    },
+                    "local_setup": {
+                        "signature": "(self)",
+                        "docstring": "Opens a wizard that lets terminal users pick a local model."
+                    },
+                    "wait": {
+                        "signature": "(self)"
+                    },
+                    "anonymous_telemetry": {
+                        "signature": "(self) -> bool"
+                    },
+                    "will_contribute": {
+                        "signature": "(self)"
+                    },
+                    "chat": {
+                        "signature": "(self, message=None, display=True, stream=False, blocking=True)"
+                    },
+                    "_streaming_chat": {
+                        "signature": "(self, message=None, display=True)"
+                    },
+                    "_respond_and_store": {
+                        "signature": "(self)",
+                        "docstring": "Pulls from the respond stream, adding delimiters. Some things, like active_line, console, confirmation... these act specially.\nAlso assembles new messages and adds them to `self.messages`."
+                    },
+                    "reset": {
+                        "signature": "(self)"
+                    },
+                    "display_message": {
+                        "signature": "(self, markdown)"
+                    },
+                    "get_oi_dir": {
+                        "signature": "(self)"
+                    }
+                },
+                "docstring": "This class (one instance is called an `interpreter`) is the \"grand central station\" of this project.\n\nIts responsibilities are to:\n\n1. Given some user input, prompt the language model.\n2. Parse the language models responses, converting them into LMC Messages.\n3. Send code to the computer.\n4. Parse the computer's response (which will already be LMC Messages).\n5. Send the computer's response back to the language model.\n...\n\nThe above process should repeat\u2014going back and forth between the language model and the computer\u2014 until:\n\n6. Decide when the process is finished based on the language model's response."
+            }
+        }
+    },
+    "interpreter\\core\\render_message.py": {
+        "functions": {
+            "render_message": {
+                "signature": "(interpreter, message)",
+                "docstring": "Renders a dynamic message into a string."
+            }
+        }
+    },
+    "interpreter\\core\\respond.py": {
+        "functions": {
+            "respond": {
+                "signature": "(interpreter)",
+                "docstring": "Yields chunks.\nResponds until it decides not to run any more code or say anything else."
+            }
+        }
+    },
+    "interpreter\\core\\computer\\computer.py": {
+        "classes": {
+            "Computer": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, interpreter)"
+                    },
+                    "languages": {
+                        "signature": "(self, value)"
+                    },
+                    "_get_all_computer_tools_list": {
+                        "signature": "(self)"
+                    },
+                    "_get_all_computer_tools_signature_and_description": {
+                        "signature": "(self)",
+                        "docstring": "This function returns a list of all the computer tools that are available with their signature and description from the function docstrings.\nfor example:\ncomputer.browser.search(query) # Searches the web for the specified query and returns the results.\ncomputer.calendar.create_event(title: str, start_date: datetime.datetime, end_date: datetime.datetime, location: str = \"\", notes: str = \"\", calendar: str = None) -> str # Creates a new calendar event in the default calendar with the given parameters using AppleScript."
+                    },
+                    "_extract_tool_info": {
+                        "signature": "(self, tool)",
+                        "docstring": "Helper function to extract the signature and description of a tool's methods."
+                    },
+                    "run": {
+                        "signature": "(self, *args, **kwargs)",
+                        "docstring": "Shortcut for computer.terminal.run"
+                    },
+                    "exec": {
+                        "signature": "(self, code)",
+                        "docstring": "Shortcut for computer.terminal.run(\"shell\", code)\nIt has hallucinated this."
+                    },
+                    "stop": {
+                        "signature": "(self)",
+                        "docstring": "Shortcut for computer.terminal.stop"
+                    },
+                    "terminate": {
+                        "signature": "(self)",
+                        "docstring": "Shortcut for computer.terminal.terminate"
+                    },
+                    "screenshot": {
+                        "signature": "(self, *args, **kwargs)",
+                        "docstring": "Shortcut for computer.display.screenshot"
+                    },
+                    "view": {
+                        "signature": "(self, *args, **kwargs)",
+                        "docstring": "Shortcut for computer.display.screenshot"
+                    },
+                    "to_dict": {
+                        "signature": "(self)"
+                    },
+                    "load_dict": {
+                        "signature": "(self, data_dict)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\ai\\ai.py": {
+        "functions": {
+            "split_into_chunks": {
+                "signature": "(text, tokens, llm, overlap)"
+            },
+            "chunk_responses": {
+                "signature": "(responses, tokens, llm)"
+            },
+            "fast_llm": {
+                "signature": "(llm, system_message, user_message)"
+            },
+            "query_map_chunks": {
+                "signature": "(chunks, llm, query)",
+                "docstring": "Query the chunks of text using query_chunk_map."
+            },
+            "query_reduce_chunks": {
+                "signature": "(responses, llm, chunk_size, query)",
+                "docstring": "Reduce query responses in a while loop."
+            }
+        },
+        "classes": {
+            "Ai": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, computer)"
+                    },
+                    "chat": {
+                        "signature": "(self, text, base64=None)"
+                    },
+                    "query": {
+                        "signature": "(self, text, query, custom_reduce_query=None)"
+                    },
+                    "summarize": {
+                        "signature": "(self, text)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\browser\\browser.py": {
+        "classes": {
+            "Browser": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, computer)"
+                    },
+                    "driver": {
+                        "signature": "(self, value)"
+                    },
+                    "search": {
+                        "signature": "(self, query)",
+                        "docstring": "Searches the web for the specified query and returns the results."
+                    },
+                    "fast_search": {
+                        "signature": "(self, query)",
+                        "docstring": "Searches the web for the specified query and returns the results."
+                    },
+                    "setup": {
+                        "signature": "(self, headless)"
+                    },
+                    "go_to_url": {
+                        "signature": "(self, url)",
+                        "docstring": "Navigate to a URL"
+                    },
+                    "search_google": {
+                        "signature": "(self, query, delays=True)",
+                        "docstring": "Perform a Google search"
+                    },
+                    "analyze_page": {
+                        "signature": "(self, intent)",
+                        "docstring": "Extract HTML, list interactive elements, and analyze with AI"
+                    },
+                    "quit": {
+                        "signature": "(self)",
+                        "docstring": "Close the browser"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\browser\\browser_next.py": {
+        "functions": {
+            "setup_driver": {
+                "signature": "()"
+            },
+            "fetch_page_text": {
+                "signature": "(url)"
+            },
+            "get_google_search_results": {
+                "signature": "(query)"
+            }
+        }
+    },
+    "interpreter\\core\\computer\\calendar\\calendar.py": {
+        "classes": {
+            "Calendar": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, computer)"
+                    },
+                    "get_events": {
+                        "signature": "(self, start_date=datetime.date.today(), end_date=None)",
+                        "docstring": "Fetches calendar events for the given date or date range."
+                    },
+                    "create_event": {
+                        "signature": "(self, title: str, start_date: datetime.datetime, end_date: datetime.datetime, location='': str, notes='': str, calendar=None: str) -> str",
+                        "docstring": "Creates a new calendar event in the default calendar with the given parameters using AppleScript."
+                    },
+                    "delete_event": {
+                        "signature": "(self, event_title: str, start_date: datetime.datetime, calendar=None: str) -> str"
+                    },
+                    "get_first_calendar": {
+                        "signature": "(self) -> str"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\clipboard\\clipboard.py": {
+        "classes": {
+            "Clipboard": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, computer)"
+                    },
+                    "view": {
+                        "signature": "(self)",
+                        "docstring": "Returns the current content of on the clipboard."
+                    },
+                    "copy": {
+                        "signature": "(self, text=None)",
+                        "docstring": "Copies the given text to the clipboard."
+                    },
+                    "paste": {
+                        "signature": "(self)",
+                        "docstring": "Pastes the current content of the clipboard."
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\contacts\\contacts.py": {
+        "classes": {
+            "Contacts": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, computer)"
+                    },
+                    "get_phone_number": {
+                        "signature": "(self, contact_name)",
+                        "docstring": "Returns the phone number of a contact by name."
+                    },
+                    "get_email_address": {
+                        "signature": "(self, contact_name)",
+                        "docstring": "Returns the email address of a contact by name."
+                    },
+                    "get_full_names_from_first_name": {
+                        "signature": "(self, first_name)",
+                        "docstring": "Returns a list of full names of contacts that contain the first name provided."
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\display\\display.py": {
+        "functions": {
+            "take_screenshot_to_pil": {
+                "signature": "(screen=0, combine_screens=True)"
+            },
+            "get_displays": {
+                "signature": "()"
+            }
+        },
+        "classes": {
+            "Display": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, computer)"
+                    },
+                    "width": {
+                        "signature": "(self)"
+                    },
+                    "height": {
+                        "signature": "(self)"
+                    },
+                    "size": {
+                        "signature": "(self)",
+                        "docstring": "Returns the current screen size as a tuple (width, height)."
+                    },
+                    "center": {
+                        "signature": "(self)",
+                        "docstring": "Calculates and returns the center point of the screen as a tuple (x, y)."
+                    },
+                    "info": {
+                        "signature": "(self)",
+                        "docstring": "Returns a list of all connected monitor/displays and their information"
+                    },
+                    "view": {
+                        "signature": "(self, show=True, quadrant=None, screen=0, combine_screens=True, active_app_only=True)",
+                        "docstring": "Redirects to self.screenshot"
+                    },
+                    "screenshot": {
+                        "signature": "(self, screen=0, show=True, quadrant=None, active_app_only=True, combine_screens=True)",
+                        "docstring": "Shows you what's on the screen by taking a screenshot of the entire screen or a specified quadrant. Returns a `pil_image` `in case you need it (rarely). **You almost always want to do this first!**\n:param screen: specify which display; 0 for primary and 1 and above for secondary.\n:param combine_screens: If True, a collage of all display screens will be returned. Otherwise, a list of display screens will be returned."
+                    },
+                    "find": {
+                        "signature": "(self, description, screenshot=None)"
+                    },
+                    "find_text": {
+                        "signature": "(self, text, screenshot=None)",
+                        "docstring": "Searches for specified text within a screenshot or the current screen if no screenshot is provided."
+                    },
+                    "get_text_as_list_of_lists": {
+                        "signature": "(self, screenshot=None)",
+                        "docstring": "Extracts and returns text from a screenshot or the current screen as a list of lists, each representing a line of text."
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\display\\point\\point.py": {
+        "functions": {
+            "take_screenshot_to_pil": {
+                "signature": "(filename='temp_screenshot.png')"
+            },
+            "point": {
+                "signature": "(description, screenshot=None, debug=False, hashes=None)"
+            },
+            "find_icon": {
+                "signature": "(description, screenshot=None, debug=False, hashes=None)"
+            },
+            "image_search": {
+                "signature": "(query, icons, hashes, debug)"
+            },
+            "get_element_boxes": {
+                "signature": "(image_data, debug)"
+            }
+        }
+    },
+    "interpreter\\core\\computer\\docs\\docs.py": {
+        "classes": {
+            "Docs": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, computer)"
+                    },
+                    "search": {
+                        "signature": "(self, query, module=None, paths=None)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\files\\files.py": {
+        "functions": {
+            "get_close_matches_in_text": {
+                "signature": "(original_text, filedata, n=3)",
+                "docstring": "Returns the closest matches to the original text in the content of the file."
+            }
+        },
+        "classes": {
+            "Files": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, computer)"
+                    },
+                    "search": {
+                        "signature": "(self, *args, **kwargs)",
+                        "docstring": "Search the filesystem for the given query."
+                    },
+                    "edit": {
+                        "signature": "(self, path, original_text, replacement_text)",
+                        "docstring": "Edits a file on the filesystem, replacing the original text with the replacement text."
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\keyboard\\keyboard.py": {
+        "classes": {
+            "Keyboard": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, computer)"
+                    },
+                    "write": {
+                        "signature": "(self, text, interval=None, delay=0.3, **kwargs)",
+                        "docstring": "Type out a string of characters with some realistic delay."
+                    },
+                    "press": {
+                        "signature": "(self, *args)"
+                    },
+                    "press_and_release": {
+                        "signature": "(self, *args)",
+                        "docstring": "Press and release a key or a sequence of keys.\n\nThis method is a perfect proxy for the press method."
+                    },
+                    "hotkey": {
+                        "signature": "(self, *args)",
+                        "docstring": "Press a sequence of keys in the order they are provided, and then release them in reverse order."
+                    },
+                    "down": {
+                        "signature": "(self, key)",
+                        "docstring": "Press down a key."
+                    },
+                    "up": {
+                        "signature": "(self, key)",
+                        "docstring": "Release a key."
+                    }
+                },
+                "docstring": "A class to simulate keyboard inputs"
+            }
+        }
+    },
+    "interpreter\\core\\computer\\mail\\mail.py": {
+        "classes": {
+            "Mail": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, computer)"
+                    },
+                    "get": {
+                        "signature": "(self, number=5, unread=False: bool)",
+                        "docstring": "Retrieves the last {number} emails from the inbox, optionally filtering for only unread emails."
+                    },
+                    "send": {
+                        "signature": "(self, to, subject, body, attachments=None)",
+                        "docstring": "Sends an email with the given parameters using the default mail app."
+                    },
+                    "unread_count": {
+                        "signature": "(self)",
+                        "docstring": "Retrieves the count of unread emails in the inbox, limited to 50."
+                    },
+                    "calculate_upload_delay": {
+                        "signature": "(self, attachments)"
+                    },
+                    "format_path_for_applescript": {
+                        "signature": "(self, file_path)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\mouse\\mouse.py": {
+        "functions": {
+            "smooth_move_to": {
+                "signature": "(x, y, duration=2)"
+            }
+        },
+        "classes": {
+            "Mouse": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, computer)"
+                    },
+                    "scroll": {
+                        "signature": "(self, clicks)",
+                        "docstring": "Scrolls the mouse wheel up or down the specified number of clicks."
+                    },
+                    "position": {
+                        "signature": "(self)",
+                        "docstring": "Get the current mouse position.\n\nReturns:\n    tuple: A tuple (x, y) representing the mouse's current position on the screen."
+                    },
+                    "move": {
+                        "signature": "(self, *args)",
+                        "docstring": "Moves the mouse to specified coordinates, an icon, or text."
+                    },
+                    "click": {
+                        "signature": "(self, *args, **kwargs)",
+                        "docstring": "Clicks the mouse at the specified coordinates, icon, or text."
+                    },
+                    "double_click": {
+                        "signature": "(self, *args, **kwargs)",
+                        "docstring": "Double-clicks the mouse at the specified coordinates, icon, or text."
+                    },
+                    "triple_click": {
+                        "signature": "(self, *args, **kwargs)",
+                        "docstring": "Triple-clicks the mouse at the specified coordinates, icon, or text."
+                    },
+                    "right_click": {
+                        "signature": "(self, *args, **kwargs)",
+                        "docstring": "Right-clicks the mouse at the specified coordinates, icon, or text."
+                    },
+                    "down": {
+                        "signature": "(self)",
+                        "docstring": "Presses the mouse button down."
+                    },
+                    "up": {
+                        "signature": "(self)",
+                        "docstring": "Releases the mouse button."
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\os\\os.py": {
+        "classes": {
+            "Os": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, computer)"
+                    },
+                    "get_selected_text": {
+                        "signature": "(self)",
+                        "docstring": "Returns the currently selected text."
+                    },
+                    "notify": {
+                        "signature": "(self, text)",
+                        "docstring": "Displays a notification on the computer."
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\skills\\skills.py": {
+        "classes": {
+            "Skills": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, computer)"
+                    },
+                    "list": {
+                        "signature": "(self)"
+                    },
+                    "run": {
+                        "signature": "(self, skill)"
+                    },
+                    "search": {
+                        "signature": "(self, query)",
+                        "docstring": "This just lists all for now."
+                    },
+                    "import_skills": {
+                        "signature": "(self)"
+                    }
+                }
+            },
+            "NewSkill": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, skills)"
+                    },
+                    "create": {
+                        "signature": "(self)"
+                    },
+                    "name": {
+                        "signature": "(self, value)"
+                    },
+                    "add_step": {
+                        "signature": "(self, step, code)"
+                    },
+                    "save": {
+                        "signature": "(self)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\sms\\sms.py": {
+        "classes": {
+            "SMS": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, computer)"
+                    },
+                    "resolve_database_path": {
+                        "signature": "(self)"
+                    },
+                    "send": {
+                        "signature": "(self, to, message)"
+                    },
+                    "get": {
+                        "signature": "(self, contact=None, limit=10, substring=None)"
+                    },
+                    "can_access_database": {
+                        "signature": "(self)"
+                    },
+                    "prompt_full_disk_access": {
+                        "signature": "(self)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\terminal\\base_language.py": {
+        "classes": {
+            "BaseLanguage": {
+                "methods": {
+                    "run": {
+                        "signature": "(self, code)",
+                        "docstring": "Generator that yields a dictionary in LMC format:\n{\"type\": \"console\", \"format\": \"output\", \"content\": \"a printed statement\"}\n{\"type\": \"console\", \"format\": \"active_line\", \"content\": \"1\"}\n{\"type\": \"image\", \"format\": \"base64\", \"content\": \"{base64}\"}"
+                    },
+                    "stop": {
+                        "signature": "(self)",
+                        "docstring": "Halts code execution, but does not terminate state."
+                    },
+                    "terminate": {
+                        "signature": "(self)",
+                        "docstring": "Terminates state."
+                    }
+                },
+                "docstring": "Attributes\n\nname = \"baselanguage\" # Name as it is seen by the LLM\nfile_extension = \"sh\" # (OPTIONAL) File extension, used for safe_mode code scanning\naliases = [\"bash\", \"sh\", \"zsh\"] # (OPTIONAL) Aliases that will also point to this language if the LLM runs them\n\nMethods\n\nrun (Generator that yields a dictionary in LMC format)\nstop (Halts code execution, but does not terminate state)\nterminate (Terminates state)"
+            }
+        }
+    },
+    "interpreter\\core\\computer\\terminal\\terminal.py": {
+        "classes": {
+            "Terminal": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, computer)"
+                    },
+                    "sudo_install": {
+                        "signature": "(self, package)"
+                    },
+                    "get_language": {
+                        "signature": "(self, language)"
+                    },
+                    "run": {
+                        "signature": "(self, language, code, stream=False, display=False)"
+                    },
+                    "_streaming_run": {
+                        "signature": "(self, language, code, display=False)"
+                    },
+                    "stop": {
+                        "signature": "(self)"
+                    },
+                    "terminate": {
+                        "signature": "(self)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\terminal\\languages\\applescript.py": {
+        "classes": {
+            "AppleScript": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self)"
+                    },
+                    "preprocess_code": {
+                        "signature": "(self, code)",
+                        "docstring": "Inserts an end_of_execution marker and adds active line indicators."
+                    },
+                    "add_active_line_indicators": {
+                        "signature": "(self, code)",
+                        "docstring": "Adds log commands to indicate the active line of execution in the AppleScript."
+                    },
+                    "detect_active_line": {
+                        "signature": "(self, line)",
+                        "docstring": "Detects active line indicator in the output."
+                    },
+                    "detect_end_of_execution": {
+                        "signature": "(self, line)",
+                        "docstring": "Detects end of execution marker in the output."
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\terminal\\languages\\html.py": {
+        "classes": {
+            "HTML": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self)"
+                    },
+                    "run": {
+                        "signature": "(self, code)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\terminal\\languages\\java.py": {
+        "functions": {
+            "preprocess_java": {
+                "signature": "(code)",
+                "docstring": "Add active line markers\nAdd end of execution marker"
+            }
+        },
+        "classes": {
+            "Java": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self)"
+                    },
+                    "preprocess_code": {
+                        "signature": "(self, code)"
+                    },
+                    "line_postprocessor": {
+                        "signature": "(self, line)"
+                    },
+                    "detect_active_line": {
+                        "signature": "(self, line)"
+                    },
+                    "detect_end_of_execution": {
+                        "signature": "(self, line)"
+                    },
+                    "run": {
+                        "signature": "(self, code)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\terminal\\languages\\javascript.py": {
+        "functions": {
+            "preprocess_javascript": {
+                "signature": "(code)",
+                "docstring": "Add active line markers\nWrap in a try catch\nAdd end of execution marker"
+            }
+        },
+        "classes": {
+            "JavaScript": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self)"
+                    },
+                    "preprocess_code": {
+                        "signature": "(self, code)"
+                    },
+                    "line_postprocessor": {
+                        "signature": "(self, line)"
+                    },
+                    "detect_active_line": {
+                        "signature": "(self, line)"
+                    },
+                    "detect_end_of_execution": {
+                        "signature": "(self, line)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\terminal\\languages\\jupyter_language.py": {
+        "functions": {
+            "preprocess_python": {
+                "signature": "(code)",
+                "docstring": "Add active line markers\nWrap in a try except"
+            },
+            "add_active_line_prints": {
+                "signature": "(code)",
+                "docstring": "Add print statements indicating line numbers to a python string."
+            },
+            "wrap_in_try_except": {
+                "signature": "(code)"
+            },
+            "string_to_python": {
+                "signature": "(code_as_string)"
+            }
+        },
+        "classes": {
+            "JupyterLanguage": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, computer)"
+                    },
+                    "terminate": {
+                        "signature": "(self)"
+                    },
+                    "run": {
+                        "signature": "(self, code)"
+                    },
+                    "_execute_code": {
+                        "signature": "(self, code, message_queue)"
+                    },
+                    "detect_active_line": {
+                        "signature": "(self, line)"
+                    },
+                    "_capture_output": {
+                        "signature": "(self, message_queue)"
+                    },
+                    "stop": {
+                        "signature": "(self)"
+                    },
+                    "preprocess_code": {
+                        "signature": "(self, code)"
+                    }
+                }
+            },
+            "AddLinePrints": {
+                "methods": {
+                    "insert_print_statement": {
+                        "signature": "(self, line_number)",
+                        "docstring": "Inserts a print statement for a given line number."
+                    },
+                    "process_body": {
+                        "signature": "(self, body)",
+                        "docstring": "Processes a block of statements, adding print calls."
+                    },
+                    "visit": {
+                        "signature": "(self, node)",
+                        "docstring": "Overridden visit to transform nodes."
+                    }
+                },
+                "docstring": "Transformer to insert print statements indicating the line number\nbefore every executable line in the AST."
+            }
+        }
+    },
+    "interpreter\\core\\computer\\terminal\\languages\\powershell.py": {
+        "functions": {
+            "preprocess_powershell": {
+                "signature": "(code)",
+                "docstring": "Add active line markers\nWrap in try-catch block\nAdd end of execution marker"
+            },
+            "add_active_line_prints": {
+                "signature": "(code)",
+                "docstring": "Add Write-Output statements indicating line numbers to a PowerShell script."
+            },
+            "wrap_in_try_catch": {
+                "signature": "(code)",
+                "docstring": "Wrap PowerShell code in a try-catch block to catch errors and display them."
+            }
+        },
+        "classes": {
+            "PowerShell": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self)"
+                    },
+                    "preprocess_code": {
+                        "signature": "(self, code)"
+                    },
+                    "line_postprocessor": {
+                        "signature": "(self, line)"
+                    },
+                    "detect_active_line": {
+                        "signature": "(self, line)"
+                    },
+                    "detect_end_of_execution": {
+                        "signature": "(self, line)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\terminal\\languages\\python.py": {
+        "classes": {}
+    },
+    "interpreter\\core\\computer\\terminal\\languages\\r.py": {
+        "classes": {
+            "R": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self)"
+                    },
+                    "preprocess_code": {
+                        "signature": "(self, code)",
+                        "docstring": "Add active line markers\nWrap in a tryCatch for better error handling in R\nAdd end of execution marker"
+                    },
+                    "line_postprocessor": {
+                        "signature": "(self, line)"
+                    },
+                    "detect_active_line": {
+                        "signature": "(self, line)"
+                    },
+                    "detect_end_of_execution": {
+                        "signature": "(self, line)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\terminal\\languages\\react.py": {
+        "functions": {
+            "is_incompatible": {
+                "signature": "(code)"
+            }
+        },
+        "classes": {
+            "React": {
+                "methods": {
+                    "run": {
+                        "signature": "(self, code)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\terminal\\languages\\ruby.py": {
+        "classes": {
+            "Ruby": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self)"
+                    },
+                    "preprocess_code": {
+                        "signature": "(self, code)",
+                        "docstring": "Add active line markers\nWrap in a tryCatch for better error handling \nAdd end of execution marker"
+                    },
+                    "line_postprocessor": {
+                        "signature": "(self, line)"
+                    },
+                    "detect_active_line": {
+                        "signature": "(self, line)"
+                    },
+                    "detect_end_of_execution": {
+                        "signature": "(self, line)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\terminal\\languages\\shell.py": {
+        "functions": {
+            "preprocess_shell": {
+                "signature": "(code)",
+                "docstring": "Add active line markers\nWrap in a try except (trap in shell)\nAdd end of execution marker"
+            },
+            "add_active_line_prints": {
+                "signature": "(code)",
+                "docstring": "Add echo statements indicating line numbers to a shell string."
+            },
+            "has_multiline_commands": {
+                "signature": "(script_text)"
+            }
+        },
+        "classes": {
+            "Shell": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self)"
+                    },
+                    "preprocess_code": {
+                        "signature": "(self, code)"
+                    },
+                    "line_postprocessor": {
+                        "signature": "(self, line)"
+                    },
+                    "detect_active_line": {
+                        "signature": "(self, line)"
+                    },
+                    "detect_end_of_execution": {
+                        "signature": "(self, line)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\terminal\\languages\\subprocess_language.py": {
+        "classes": {
+            "SubprocessLanguage": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self)"
+                    },
+                    "detect_active_line": {
+                        "signature": "(self, line)"
+                    },
+                    "detect_end_of_execution": {
+                        "signature": "(self, line)"
+                    },
+                    "line_postprocessor": {
+                        "signature": "(self, line)"
+                    },
+                    "preprocess_code": {
+                        "signature": "(self, code)",
+                        "docstring": "This needs to insert an end_of_execution marker of some kind,\nwhich can be detected by detect_end_of_execution.\n\nOptionally, add active line markers for detect_active_line."
+                    },
+                    "terminate": {
+                        "signature": "(self)"
+                    },
+                    "start_process": {
+                        "signature": "(self)"
+                    },
+                    "run": {
+                        "signature": "(self, code)"
+                    },
+                    "handle_stream_output": {
+                        "signature": "(self, stream, is_error_stream)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\computer\\utils\\computer_vision.py": {
+        "functions": {
+            "pytesseract_get_text": {
+                "signature": "(img)"
+            },
+            "pytesseract_get_text_bounding_boxes": {
+                "signature": "(img)"
+            },
+            "find_text_in_image": {
+                "signature": "(img, text, debug=False)"
+            }
+        }
+    },
+    "interpreter\\core\\computer\\utils\\get_active_window.py": {
+        "functions": {
+            "get_active_window": {
+                "signature": "()"
+            }
+        }
+    },
+    "interpreter\\core\\computer\\utils\\html_to_png_base64.py": {
+        "functions": {
+            "html_to_png_base64": {
+                "signature": "(code)"
+            }
+        }
+    },
+    "interpreter\\core\\computer\\utils\\recipient_utils.py": {
+        "functions": {
+            "format_to_recipient": {
+                "signature": "(text, recipient)"
+            },
+            "parse_for_recipient": {
+                "signature": "(content)"
+            }
+        }
+    },
+    "interpreter\\core\\computer\\utils\\run_applescript.py": {
+        "functions": {
+            "run_applescript": {
+                "signature": "(script)",
+                "docstring": "Runs the given AppleScript using osascript and returns the result."
+            },
+            "run_applescript_capture": {
+                "signature": "(script)",
+                "docstring": "Runs the given AppleScript using osascript, captures the output and error, and returns them."
+            }
+        }
+    },
+    "interpreter\\core\\computer\\vision\\vision.py": {
+        "classes": {
+            "Vision": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, computer)"
+                    },
+                    "load": {
+                        "signature": "(self, load_moondream=True, load_easyocr=True)"
+                    },
+                    "ocr": {
+                        "signature": "(self, base_64=None, path=None, lmc=None, pil_image=None)",
+                        "docstring": "Gets OCR of image."
+                    },
+                    "query": {
+                        "signature": "(self, query='Describe this image. Also tell me what text is in the image, if any.', base_64=None, path=None, lmc=None, pil_image=None)",
+                        "docstring": "Uses Moondream to ask query of the image (which can be a base64, path, or lmc message)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\core\\llm\\llm.py": {
+        "functions": {
+            "fixed_litellm_completions": {
+                "signature": "(**params)",
+                "docstring": "Just uses a dummy API key, since we use litellm without an API key sometimes.\nHopefully they will fix this!"
+            }
+        },
+        "classes": {
+            "SuppressDebugFilter": {
+                "methods": {
+                    "filter": {
+                        "signature": "(self, record)"
+                    }
+                }
+            },
+            "Llm": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, interpreter)"
+                    },
+                    "run": {
+                        "signature": "(self, messages)",
+                        "docstring": "We're responsible for formatting the call into the llm.completions object,\nstarting with LMC messages in interpreter.messages, going to OpenAI compatible messages into the llm,\nrespecting whether it's a vision or function model, respecting its context window and max tokens, etc.\n\nAnd then processing its output, whether it's a function or non function calling model, into LMC format."
+                    },
+                    "model": {
+                        "signature": "(self, value)"
+                    },
+                    "load": {
+                        "signature": "(self)"
+                    }
+                },
+                "docstring": "A stateless LMC-style LLM with some helpful properties."
+            }
+        }
+    },
+    "interpreter\\core\\llm\\run_function_calling_llm.py": {
+        "functions": {
+            "run_function_calling_llm": {
+                "signature": "(llm, request_params)"
+            }
+        }
+    },
+    "interpreter\\core\\llm\\run_text_llm.py": {
+        "functions": {
+            "run_text_llm": {
+                "signature": "(llm, params)"
+            }
+        }
+    },
+    "interpreter\\core\\llm\\run_tool_calling_llm.py": {
+        "functions": {
+            "process_messages": {
+                "signature": "(messages)"
+            },
+            "run_tool_calling_llm": {
+                "signature": "(llm, request_params)"
+            }
+        }
+    },
+    "interpreter\\core\\llm\\utils\\convert_to_openai_messages.py": {
+        "functions": {
+            "convert_to_openai_messages": {
+                "signature": "(messages, function_calling=True, vision=False, shrink_images=True, interpreter=None)",
+                "docstring": "Converts LMC messages into OpenAI messages"
+            }
+        }
+    },
+    "interpreter\\core\\llm\\utils\\merge_deltas.py": {
+        "functions": {
+            "merge_deltas": {
+                "signature": "(original, delta)",
+                "docstring": "Pushes the delta into the original and returns that.\n\nGreat for reconstructing OpenAI streaming responses -> complete message objects."
+            }
+        }
+    },
+    "interpreter\\core\\llm\\utils\\parse_partial_json.py": {
+        "functions": {
+            "parse_partial_json": {
+                "signature": "(s)"
+            }
+        }
+    },
+    "interpreter\\core\\utils\\lazy_import.py": {
+        "functions": {
+            "lazy_import": {
+                "signature": "(name, optional=True)",
+                "docstring": "Lazily import a module, specified by the name. Useful for optional packages, to speed up startup times."
+            }
+        }
+    },
+    "interpreter\\core\\utils\\scan_code.py": {
+        "functions": {
+            "scan_code": {
+                "signature": "(code, language, interpreter)",
+                "docstring": "Scan code with semgrep"
+            }
+        }
+    },
+    "interpreter\\core\\utils\\system_debug_info.py": {
+        "functions": {
+            "get_python_version": {
+                "signature": "()"
+            },
+            "get_pip_version": {
+                "signature": "()"
+            },
+            "get_oi_version": {
+                "signature": "()"
+            },
+            "get_os_version": {
+                "signature": "()"
+            },
+            "get_cpu_info": {
+                "signature": "()"
+            },
+            "get_ram_info": {
+                "signature": "()"
+            },
+            "get_package_mismatches": {
+                "signature": "(file_path='pyproject.toml')"
+            },
+            "interpreter_info": {
+                "signature": "(interpreter)"
+            },
+            "system_info": {
+                "signature": "(interpreter)"
+            }
+        }
+    },
+    "interpreter\\core\\utils\\telemetry.py": {
+        "functions": {
+            "get_or_create_uuid": {
+                "signature": "()"
+            },
+            "send_telemetry": {
+                "signature": "(event_name, properties=None)"
+            }
+        }
+    },
+    "interpreter\\core\\utils\\temporary_file.py": {
+        "functions": {
+            "cleanup_temporary_file": {
+                "signature": "(temp_file_name, verbose=False)",
+                "docstring": "clean up temporary file"
+            },
+            "create_temporary_file": {
+                "signature": "(contents, extension=None, verbose=False)",
+                "docstring": "create a temporary file with the given contents"
+            }
+        }
+    },
+    "interpreter\\core\\utils\\truncate_output.py": {
+        "functions": {
+            "truncate_output": {
+                "signature": "(data, max_output_chars=2800, add_scrollbars=False)"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\contributing_conversations.py": {
+        "functions": {
+            "display_contribution_message": {
+                "signature": "()"
+            },
+            "display_contributing_current_message": {
+                "signature": "()"
+            },
+            "send_past_conversations": {
+                "signature": "(interpreter)"
+            },
+            "set_send_future_conversations": {
+                "signature": "(interpreter, should_send_future)"
+            },
+            "user_wants_to_contribute_past": {
+                "signature": "()"
+            },
+            "user_wants_to_contribute_future": {
+                "signature": "()"
+            },
+            "contribute_conversation_launch_logic": {
+                "signature": "(interpreter)"
+            },
+            "contribute_past_and_future_logic": {
+                "signature": "(interpreter, contribution_cache: ContributionCache)"
+            },
+            "get_contribute_cache_contents": {
+                "signature": "() -> ContributionCache"
+            },
+            "write_to_contribution_cache": {
+                "signature": "(contribution_cache: ContributionCache)"
+            },
+            "get_all_conversations": {
+                "signature": "(interpreter) -> List[List]"
+            },
+            "is_list_of_lists": {
+                "signature": "(l)"
+            },
+            "contribute_conversations": {
+                "signature": "(conversations: List[List], feedback=None, conversation_id=None)"
+            }
+        },
+        "classes": {}
+    },
+    "interpreter\\terminal_interface\\conversation_navigator.py": {
+        "functions": {
+            "conversation_navigator": {
+                "signature": "(interpreter)"
+            },
+            "open_folder": {
+                "signature": "(path)"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\local_setup.py": {
+        "functions": {
+            "local_setup": {
+                "signature": "(interpreter, provider=None, model=None)"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\magic_commands.py": {
+        "functions": {
+            "handle_undo": {
+                "signature": "(self, arguments)"
+            },
+            "handle_help": {
+                "signature": "(self, arguments)"
+            },
+            "handle_verbose": {
+                "signature": "(self, arguments=None)"
+            },
+            "handle_debug": {
+                "signature": "(self, arguments=None)"
+            },
+            "handle_auto_run": {
+                "signature": "(self, arguments=None)"
+            },
+            "handle_info": {
+                "signature": "(self, arguments)"
+            },
+            "handle_reset": {
+                "signature": "(self, arguments)"
+            },
+            "default_handle": {
+                "signature": "(self, arguments)"
+            },
+            "handle_save_message": {
+                "signature": "(self, json_path)"
+            },
+            "handle_load_message": {
+                "signature": "(self, json_path)"
+            },
+            "handle_count_tokens": {
+                "signature": "(self, prompt)"
+            },
+            "get_downloads_path": {
+                "signature": "()"
+            },
+            "install_and_import": {
+                "signature": "(package)"
+            },
+            "jupyter": {
+                "signature": "(self, arguments)"
+            },
+            "markdown": {
+                "signature": "(self, export_path: str)"
+            },
+            "handle_magic_command": {
+                "signature": "(self, user_input)"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\render_past_conversation.py": {
+        "functions": {
+            "render_past_conversation": {
+                "signature": "(messages)"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\start_terminal_interface.py": {
+        "functions": {
+            "start_terminal_interface": {
+                "signature": "(interpreter)",
+                "docstring": "Meant to be used from the command line. Parses arguments, starts OI's terminal interface."
+            },
+            "set_attributes": {
+                "signature": "(args, arguments)"
+            },
+            "get_argument_dictionary": {
+                "signature": "(arguments: list[dict], key: str) -> dict"
+            },
+            "main": {
+                "signature": "()"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\terminal_interface.py": {
+        "functions": {
+            "terminal_interface": {
+                "signature": "(interpreter, message)"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\validate_llm_settings.py": {
+        "functions": {
+            "validate_llm_settings": {
+                "signature": "(interpreter)",
+                "docstring": "Interactively prompt the user for required LLM settings"
+            },
+            "display_welcome_message_once": {
+                "signature": "(interpreter)",
+                "docstring": "Displays a welcome message only on its first call.\n\n(Uses an internal attribute `_displayed` to track its state.)"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\components\\base_block.py": {
+        "classes": {
+            "BaseBlock": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self)"
+                    },
+                    "update_from_message": {
+                        "signature": "(self, message)"
+                    },
+                    "end": {
+                        "signature": "(self)"
+                    },
+                    "refresh": {
+                        "signature": "(self, cursor=True)"
+                    }
+                },
+                "docstring": "a visual \"block\" on the terminal."
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\components\\code_block.py": {
+        "classes": {
+            "CodeBlock": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self, interpreter=None)"
+                    },
+                    "end": {
+                        "signature": "(self)"
+                    },
+                    "refresh": {
+                        "signature": "(self, cursor=True)"
+                    }
+                },
+                "docstring": "Code Blocks display code and outputs in different languages. You can also set the active_line!"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\components\\message_block.py": {
+        "functions": {
+            "textify_markdown_code_blocks": {
+                "signature": "(text)",
+                "docstring": "To distinguish CodeBlocks from markdown code, we simply turn all markdown code\n(like '```python...') into text code blocks ('```text') which makes the code black and white."
+            }
+        },
+        "classes": {
+            "MessageBlock": {
+                "methods": {
+                    "__init__": {
+                        "signature": "(self)"
+                    },
+                    "refresh": {
+                        "signature": "(self, cursor=True)"
+                    }
+                }
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\profiles\\profiles.py": {
+        "functions": {
+            "profile": {
+                "signature": "(interpreter, filename_or_url)"
+            },
+            "get_profile": {
+                "signature": "(filename_or_url, profile_path)"
+            },
+            "apply_profile": {
+                "signature": "(interpreter, profile, profile_path)"
+            },
+            "migrate_profile": {
+                "signature": "(old_path, new_path)"
+            },
+            "apply_profile_to_object": {
+                "signature": "(obj, profile)"
+            },
+            "open_storage_dir": {
+                "signature": "(directory)"
+            },
+            "reset_profile": {
+                "signature": "(specific_default_profile=None)"
+            },
+            "get_default_profile": {
+                "signature": "(specific_default_profile)"
+            },
+            "determine_user_version": {
+                "signature": "()"
+            },
+            "migrate_app_directory": {
+                "signature": "(old_dir, new_dir, profile_dir)"
+            },
+            "migrate_user_app_directory": {
+                "signature": "()"
+            },
+            "write_key_to_profile": {
+                "signature": "(key, value)"
+            }
+        },
+        "classes": {
+            "RemoveInterpreter": {
+                "methods": {
+                    "visit_ImportFrom": {
+                        "signature": "(self, node)"
+                    },
+                    "visit_Assign": {
+                        "signature": "(self, node)"
+                    }
+                },
+                "docstring": "Remove `from interpreter import interpreter` and `interpreter = OpenInterpreter()`"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\profiles\\defaults\\e2b.py": {
+        "classes": {
+            "PythonE2B": {
+                "methods": {
+                    "run": {
+                        "signature": "(self, code)",
+                        "docstring": "Generator that yields a dictionary in LMC Format."
+                    },
+                    "stop": {
+                        "signature": "(self)",
+                        "docstring": "Stops the code."
+                    },
+                    "terminate": {
+                        "signature": "(self)",
+                        "docstring": "Terminates the entire process."
+                    }
+                },
+                "docstring": "This class contains all requirements for being a custom language in Open Interpreter:\n\n- name (an attribute)\n- run (a method)\n- stop (a method)\n- terminate (a method)\n\nHere, we'll use E2B to power the `run` method."
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\utils\\check_for_package.py": {
+        "functions": {
+            "check_for_package": {
+                "signature": "(package)"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\utils\\check_for_update.py": {
+        "functions": {
+            "check_for_update": {
+                "signature": "()"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\utils\\cli_input.py": {
+        "functions": {
+            "cli_input": {
+                "signature": "(prompt='': str) -> str"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\utils\\count_tokens.py": {
+        "functions": {
+            "count_tokens": {
+                "signature": "(text='', model='gpt-4')",
+                "docstring": "Count the number of tokens in a string"
+            },
+            "token_cost": {
+                "signature": "(tokens=0, model='gpt-4')",
+                "docstring": "Calculate the cost of the current number of tokens"
+            },
+            "count_messages_tokens": {
+                "signature": "(messages=[], model=None)",
+                "docstring": "Count the number of tokens in a list of messages"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\utils\\display_markdown_message.py": {
+        "functions": {
+            "display_markdown_message": {
+                "signature": "(message)",
+                "docstring": "Display markdown message. Works with multiline strings with lots of indentation.\nWill automatically make single line > tags beautiful."
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\utils\\display_output.py": {
+        "functions": {
+            "display_output": {
+                "signature": "(output)"
+            },
+            "display_output_cli": {
+                "signature": "(output)"
+            },
+            "open_file": {
+                "signature": "(file_path)"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\utils\\export_to_markdown.py": {
+        "functions": {
+            "export_to_markdown": {
+                "signature": "(messages: list[dict], export_path: str)"
+            },
+            "messages_to_markdown": {
+                "signature": "(messages: list[dict]) -> str"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\utils\\find_image_path.py": {
+        "functions": {
+            "find_image_path": {
+                "signature": "(text)"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\utils\\get_conversations.py": {
+        "functions": {
+            "get_conversations": {
+                "signature": "()"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\utils\\in_jupyter_notebook.py": {
+        "functions": {
+            "in_jupyter_notebook": {
+                "signature": "()"
+            }
+        }
+    },
+    "interpreter\\terminal_interface\\utils\\local_storage_path.py": {
+        "functions": {
+            "get_storage_path": {
+                "signature": "(subdirectory=None)"
+            }
+        }
+    },
+    "scripts\\wtf.py": {
+        "functions": {
+            "main": {
+                "signature": "()"
+            }
+        }
+    },
+    "tests\\test_interpreter.py": {
+        "functions": {
+            "test_hallucinations": {
+                "signature": "()"
+            },
+            "run_auth_server": {
+                "signature": "()"
+            },
+            "test_authenticated_acknowledging_breaking_server": {
+                "signature": "()",
+                "docstring": "Test the server when we have authentication and acknowledging one.\n\nI know this is bad, just trying to test quickly!"
+            },
+            "run_server": {
+                "signature": "()"
+            },
+            "test_server": {
+                "signature": "()"
+            },
+            "test_sms": {
+                "signature": "()"
+            },
+            "test_pytes": {
+                "signature": "()"
+            },
+            "test_ai_chat": {
+                "signature": "()"
+            },
+            "test_generator": {
+                "signature": "()",
+                "docstring": "Sends two messages, makes sure everything is correct with display both on and off."
+            },
+            "test_localos": {
+                "signature": "()"
+            },
+            "test_m_vision": {
+                "signature": "()"
+            },
+            "test_point": {
+                "signature": "()"
+            },
+            "test_skills": {
+                "signature": "()"
+            },
+            "test_browser": {
+                "signature": "()"
+            },
+            "test_display_api": {
+                "signature": "()"
+            },
+            "test_websocket_server": {
+                "signature": "()"
+            },
+            "test_i": {
+                "signature": "()"
+            },
+            "test_async": {
+                "signature": "()"
+            },
+            "test_find_text_api": {
+                "signature": "()"
+            },
+            "test_getActiveWindow": {
+                "signature": "()"
+            },
+            "test_notify": {
+                "signature": "()"
+            },
+            "test_get_text": {
+                "signature": "()"
+            },
+            "test_keyboard": {
+                "signature": "()"
+            },
+            "test_get_selected_text": {
+                "signature": "()"
+            },
+            "test_display_verbose": {
+                "signature": "()"
+            },
+            "setup_function": {
+                "signature": "()"
+            },
+            "test_long_message": {
+                "signature": "()"
+            },
+            "teardown_function": {
+                "signature": "()"
+            },
+            "test_spotlight": {
+                "signature": "()"
+            },
+            "test_files": {
+                "signature": "()"
+            },
+            "test_vision": {
+                "signature": "()"
+            },
+            "test_multiple_instances": {
+                "signature": "()"
+            },
+            "test_hello_world": {
+                "signature": "()"
+            },
+            "test_math": {
+                "signature": "()"
+            },
+            "test_break_execution": {
+                "signature": "()",
+                "docstring": "Breaking from the generator while it's executing should halt the operation."
+            },
+            "test_delayed_exec": {
+                "signature": "()"
+            },
+            "test_nested_loops_and_multiple_newlines": {
+                "signature": "()"
+            },
+            "test_write_to_file": {
+                "signature": "()"
+            },
+            "test_markdown": {
+                "signature": "()"
+            },
+            "test_reset": {
+                "signature": "()"
+            },
+            "test_token_counter": {
+                "signature": "()"
+            }
+        }
+    },
+    "tests\\core\\test_async_core.py": {
+        "classes": {
+            "TestServerConstruction": {
+                "methods": {
+                    "test_host_and_port_defaults": {
+                        "signature": "(self)",
+                        "docstring": "Tests that a Server object takes on the default host and port when\na) no host and port are passed in, and\nb) no HOST and PORT are set."
+                    },
+                    "test_host_and_port_passed_in": {
+                        "signature": "(self)",
+                        "docstring": "Tests that a Server object takes on the passed-in host and port when they are passed-in,\nignoring the surrounding HOST and PORT env vars."
+                    },
+                    "test_host_and_port_from_env_1": {
+                        "signature": "(self)",
+                        "docstring": "Tests that the Server object takes on the HOST and PORT env vars as host and port when\nnothing has been passed in."
+                    }
+                },
+                "docstring": "Tests to make sure that the underlying server is configured correctly when constructing\nthe Server object."
+            }
+        }
+    },
+    "tests\\core\\computer\\test_computer.py": {
+        "classes": {
+            "TestComputer": {
+                "methods": {
+                    "setUp": {
+                        "signature": "(self)"
+                    },
+                    "test_get_all_computer_tools_list": {
+                        "signature": "(self)"
+                    },
+                    "test_get_all_computer_tools_signature_and_description": {
+                        "signature": "(self)"
+                    }
+                }
+            }
+        }
+    },
+    "tests\\core\\computer\\files\\test_files.py": {
+        "classes": {
+            "TestFiles": {
+                "methods": {
+                    "setUp": {
+                        "signature": "(self)"
+                    },
+                    "test_search": {
+                        "signature": "(self, mock_aifs)"
+                    },
+                    "test_edit_original_text_in_filedata": {
+                        "signature": "(self)"
+                    },
+                    "test_edit_original_text_not_in_filedata": {
+                        "signature": "(self)"
+                    }
+                }
+            }
+        }
+    }
+}
